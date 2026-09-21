@@ -246,6 +246,7 @@
     if (!form) return;
 
     const nome = document.getElementById("nome");
+    const email = document.getElementById("email");
     const cpf = document.getElementById("cpf");
     const rg = document.getElementById("rg");
     const mensagem = document.getElementById("mensagem");
@@ -255,8 +256,11 @@
       RSVP_ENDPOINT_URL && !RSVP_ENDPOINT_URL.includes("COLE_AQUI");
 
     const errNome = document.getElementById("err-nome");
+    const errEmail = document.getElementById("err-email");
     const errCpf = document.getElementById("err-cpf");
     const errRg = document.getElementById("err-rg");
+
+    const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
     cpf.addEventListener("input", () => {
       cpf.value = formatCpf(cpf.value);
@@ -277,6 +281,13 @@
         valid = false;
       } else {
         setError(nome, errNome, "");
+      }
+
+      if (!isValidEmail(email.value)) {
+        setError(email, errEmail, "Por favor, informe um e-mail válido.");
+        valid = false;
+      } else {
+        setError(email, errEmail, "");
       }
 
       if (!isValidCpf(cpf.value)) {
@@ -308,6 +319,7 @@
 
       const payload = {
         nome: nome.value.trim(),
+        email: email.value.trim(),
         cpf: onlyDigits(cpf.value),
         rg: rg.value.trim(),
         mensagem: mensagem.value.trim(),

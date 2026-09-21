@@ -76,20 +76,31 @@ O formulário na seção "Confirme sua presença" já está implementado com:
 O envio usa uma planilha do Google como "banco de dados" simples, através de um Apps Script publicado como Web App. Os dados trafegam por HTTPS diretamente para esse script — nada é exposto em texto puro nem enviado por e-mail/link no código.
 
 1. Crie uma Google Sheet nova. Na primeira linha, adicione os cabeçalhos:
-   `Data/Hora | Nome | CPF | RG | Mensagem`
+   `Data/Hora | Nome | E-mail | CPF | RG | Mensagem`
 2. Na planilha, vá em **Extensões > Apps Script**.
 3. Apague o conteúdo padrão do arquivo `Code.gs` e cole o conteúdo de [`scripts/google-apps-script.gs`](scripts/google-apps-script.gs) deste projeto.
 4. Clique em **Implantar > Nova implantação**.
    - Tipo: **Aplicativo da web**
    - Executar como: **Eu** (sua conta)
-   - Quem pode acessar: **Qualquer pessoa**
-5. Autorize as permissões pedidas (é a sua própria planilha, então é seguro aceitar).
+   - Quem pode acessar: **Qualquer pessoa** (obrigatório — sem isso os convidados recebem erro 401 ao confirmar presença, já que eles não estão logados com a sua conta Google)
+5. Autorize as permissões pedidas (é a sua própria planilha/conta, então é seguro aceitar).
 6. Copie a URL do aplicativo da web gerada (algo como `https://script.google.com/macros/s/AKfycb.../exec`).
 7. Abra [`js/main.js`](js/main.js) e substitua o valor de `RSVP_ENDPOINT_URL` (no topo do arquivo) por essa URL.
 
 Até que essa URL seja configurada, o formulário continua validando os campos normalmente, mas avisa que o envio ainda não está disponível — ele nunca tenta mandar dados para um endereço inválido.
 
+Sempre que você editar o script depois de já ter feito a implantação (por exemplo, para mudar o texto do e-mail), é preciso ir em **Implantar > Gerenciar implantações**, editar (ícone de lápis) a implantação existente e escolher **Nova versão** antes de salvar — só salvar o script (Ctrl+S) não atualiza a versão que o site já está usando. A URL continua a mesma, não precisa mexer no site de novo.
+
 **Sobre segurança:** como o Apps Script Web App não responde aos cabeçalhos CORS de forma tradicional, o site envia a requisição em modo `no-cors`. Isso significa que não conseguimos ler a resposta do Google (ela chega "opaca" ao navegador) — então a mensagem de sucesso exibida ao convidado assume que o envio funcionou sempre que não há erro de rede. Se quiser confirmação mais rigorosa (por exemplo, checar duplicidade de CPF antes de gravar), o próximo passo seria trocar esse Apps Script por um backend próprio.
+
+### E-mails automáticos
+
+O script já envia dois tipos de e-mail, usando `MailApp` (a própria conta Google que executa o script):
+
+- **Confirmação automática**: assim que alguém confirma presença pelo site, a função `doPost` chama `enviarEmailConfirmacao`, que manda um e-mail confirmando os detalhes do evento. Se o envio do e-mail falhar por algum motivo, a confirmação continua sendo gravada normalmente na planilha (o e-mail é só um extra, nunca bloqueia o cadastro).
+- **Lembrete em massa**: mais perto da data do evento, abra o projeto no Apps Script, selecione a função `enviarLembretes` no menu de funções (perto do botão "Executar") e clique em **Executar**. Ela percorre todas as linhas já confirmadas na planilha e manda um e-mail de lembrete para cada convidado.
+
+Contas Google pessoais (gratuitas) têm um limite de 100 e-mails por dia via `MailApp` — mais que suficiente para uma lista de convidados de casamento, mas vale ter em mente se for disparar os lembretes para uma lista muito grande de uma vez.
 
 ## Acessibilidade e performance
 
