@@ -9,7 +9,8 @@
 
   // URL do Google Apps Script (Web App) que grava as confirmações na planilha.
   // Configure seguindo o passo a passo em README.md > "Configurando o Google Sheets".
-  const RSVP_ENDPOINT_URL = "COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT";
+  const RSVP_ENDPOINT_URL =
+    "https://script.google.com/macros/s/AKfycbwn5Jx0X3o6qw45AvAa8O7P-p9d5y2GWoXh9GhDKgLR2w069fEcfPuPcO_t98vaCVIe/exec";
 
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
