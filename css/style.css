@@ -416,6 +416,7 @@ p:last-child { margin-bottom: 0; }
   aspect-ratio: 4 / 5;
   object-fit: cover;
   width: 100%;
+  height: auto;
 }
 
 .historia__closing {
@@ -426,6 +427,31 @@ p:last-child { margin-bottom: 0; }
   color: rgba(247, 243, 236, 0.85);
   font-family: var(--font-display);
   font-size: 1.1rem;
+}
+
+/* No mobile, cada foto fica sempre logo abaixo do seu próprio texto
+   (nunca junto da foto do próximo marco), menor, com moldura delicada
+   e um efeito de entrada suave (fade + leve zoom). */
+@media (max-width: 719px) {
+  .timeline__text {
+    order: 1;
+  }
+
+  .timeline__figure {
+    order: 2;
+    max-width: 65%;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  }
+
+  .timeline__figure.reveal {
+    transform: translateY(20px) scale(0.9);
+  }
+
+  .timeline__figure.reveal.is-visible {
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ===========================================================
